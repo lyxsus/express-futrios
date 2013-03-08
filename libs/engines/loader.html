@@ -1,0 +1,72 @@
+<html>
+	<head>
+		<title>ng1</title>
+
+		<link rel="stylesheet" type="text/css" href="http://server.iona.local/sys%2Fthemes/urn%3Athemes%2Fisureon/styles.css">
+
+		<style>
+			.in-progress {
+				opacity: 0.7;
+			}
+		</style>
+
+ 		<script src="/boot/jam/require.js"></script>
+ 		<!-- <script src="/boot/output.js"></script> -->
+
+		<script type="text/javascript">
+			var vhost = 'urn:vhost/debug';
+			// var vhost = 'urn:vhost/8c86d59a399359f707c9930901782291';
+
+			var userCtx = {
+				name: "lyxsus@gmail.com",
+				account: "urn:accounts/252cd3e11e2e8c6a8de4bc6d8bc82581",
+				database: "users/252cd3e11e2e8c6a8de4bc6d8bc82581",
+				roles: [
+					"user",
+					"developer",
+					"admin",
+					"expert",
+					"urn:accounts/252cd3e11e2e8c6a8de4bc6d8bc82581",
+					"companies/3d2ce4132bcb87d7f9fefa8eed1cbf2d/administrate",
+					"companies/3d2ce4132bcb87d7f9fefa8eed1cbf2d/broker"
+				]
+			};
+		</script>
+
+		<script type="text/javascript">
+			define ('futurios/settings', {
+				vhost: vhost,
+				depencies: [
+					'jquery-cookie-amd',
+					'futurios/plugin/moment',
+					'futurios/plugin/browser',
+					'futurios/plugin/localize',
+					'futurios/plugin/wiky',
+					'futurios/plugin/selected',
+					'futurios/olds-fix'
+				],
+				userCtx: userCtx,
+				locale: navigator.language || 'en'
+			});
+
+			require.config ({
+				baseUrl: '/boot'
+			});
+
+			require (['futurios/boot'], function (boot) {
+				boot ()
+					.then (function () {
+						console.log ('boot completed');
+					})
+					.fail (function (error) {
+						console.error (error.message, error.stack);
+					})
+					.done ();
+			});
+		</script>
+	</head>
+
+	<body>
+		
+	</body>
+</html>
