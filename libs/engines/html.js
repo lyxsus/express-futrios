@@ -1,33 +1,40 @@
 var	_ = require ('lodash'),
-	loader = require ('fs').readFileSync(__dirname + '/loader.html', 'utf-8');
+	Renderer = require ('fos-render');
 
 
-module.exports = function (resource, client) {
+module.exports = function (resource, client, host) {
 	this.resource = resource;
 	this.client = client;
-	this.loader = loader;
+	this.host = host;
 };
 
 _.extend (module.exports.prototype, {
 	render: function (req, res, next) {
 		this.headers (req, res);
 
-		// TODO: Place renderer here, in fact
-		
-		if (req.device == 'bot') {
-			res.write ('<h1>hi, bot</h1>');
-		} else {
-			res.write (this.loader);
-		}
-		
-		res.end ();
+		var renderer = new Renderer (this);
+
+		return renderer.html ({
+			device: req.device
+		})
+			.then (function (html) {
+				res.write (html);
+			})
+			.fail (function (error) {
+				console.error (error);
+				res.write (error);
+			})
+			.fin (function () {
+				res.end ();
+			})
+			.done ();
 	},
 
 	headers: function (req, res) {
 		var resource = this.resource,
 			meta = resource.get ('meta');
 
-		// res.header ('Content-Type', 'text/html; charset=utf-8');
+		res.header ('Content-Type', 'text/html; charset=utf-8');
 		res.header ('Vary', 'Accept, Accept-Encoding, Accept-Language, Cookie');
 		res.header ('ETag', resource.get ('_rev'));
 

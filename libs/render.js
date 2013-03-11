@@ -44,10 +44,11 @@ module.exports = function (req, res, next, client, routed) {
 					if (routed.attach) {
 						return resource.source
 							.getAttachment (routed.attach)
+								.on ('error', console.error)
 								.pipe (res);
 					} else {
 						var Engine = getEngine (routed.ext, desiredContentType),
-							engine = new Engine (resource, client);
+							engine = new Engine (resource, client, routed.host);
 						
 						return engine.render (req, res, next);
 

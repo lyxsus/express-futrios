@@ -2,7 +2,7 @@ var	Q = require ('q'),
 	e = encodeURIComponent;
 
 function virtualHost (host, client) {
-	return Q.when (client.get ('urn:vhost?host=' + e (host)))
+	return Q.when (client.get ('urn:vhost?domain=' + e (host)))
 		.then (function (hosts) {
 			var rows = hosts.get ('rows');
 			if (rows.length) {
@@ -74,6 +74,7 @@ function resolveUrl (url, host, routes) {
 	}
 	
 	return {
+		host: host,
 		app: app,
 		doc: doc,
 		attach: attach,

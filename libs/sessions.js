@@ -14,9 +14,11 @@ module.exports = function sessions (express, config) {
 			Store = express.session.MemoryStore;
 	}
 
+	config.instance = new Store (config.store ? config.store.options : null);
+	
 	return express.session ({
 		secret: config.secret,
 		key: config.key,
-		store: new Store (config.store ? config.store.options : null)
+		store: config.instance
 	});
 };
