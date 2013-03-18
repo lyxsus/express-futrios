@@ -62,7 +62,7 @@ function resolveUrl (url, host, routes) {
 	}
 	
 	if (!app && !doc) {
-		var entrypoint = host.get ('entrypoint'),
+		var entrypoint = host.get ('entrypoint') || 'urn:categories/root',	// TODO: Get rid off 'categories/root'
 			i = entrypoint.indexOf ('/');
 
 		if (i === -1) {

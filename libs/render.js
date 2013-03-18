@@ -11,6 +11,7 @@ function getResource (client, routed) {
 
 var engines = {
 	json: require ('./engines/json'),
+	xml: require ('./engines/xml'),
 	html: require ('./engines/html')
 };
 
