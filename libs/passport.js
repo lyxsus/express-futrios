@@ -6,6 +6,22 @@ var	passport = require ('passport'),
 
 	authorize = require ('./authorize.js');
 
+function userCtx (user) {
+	if (user && (user.get ('name') != 'nobody')) {
+		return {
+			name: user.get ('name'),
+			roles: user.get ('roles'),
+			account: user.get ('account'),
+			database: user.get ('database')
+		};
+	} else {
+		return {
+			name: null,
+			roles: []
+		};
+	}
+}
+
 
 module.exports = function (app, pool) {
 	passport.serializeUser (function (user, done) {
@@ -44,10 +60,38 @@ module.exports = function (app, pool) {
 		.use (passport.initialize ())
 		.use (passport.session ())
 
-		.post ('/login', passport.authenticate ('local', {
-			successRedirect: '/',
-			failureRedirect: '/'
-		}))
+		.post ('/login', passport.authenticate ('local'), function (req, res) {
+			if (req.headers.accept == 'application/json') {
+				res.setHeader ('content-type', 'application/json; charset=utf-8');
+
+				res.write (
+					JSON.stringify ({
+						ok: true,
+						userCtx: userCtx (req.user)
+					})
+				);
+				res.end ();
+			} else {
+				res.redirect ('/');
+			}
+		})
+
+		.use ('/_session', function (req, res) {
+			res.setHeader ('content-type', 'application/json; charset=utf-8');
+
+			Q.when (pool.client (req.user ? {oauth: req.user} : null))
+				.then (function (client) {
+					res.write (
+						JSON.stringify ({
+							ok: true,
+							userCtx: userCtx (client.user)
+						})
+					);
+					res.end ();
+				})
+				.fail (console.error)
+				.done ();
+		})
 
 		.use ('/logout', function (req, res) {
 			req.logout ();
