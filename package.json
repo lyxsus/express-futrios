@@ -1,3 +1,24 @@
 {
-	"name": "express-futurios"
+	"name": "express-futurios",
+	"version": "0.0.1",
+	"dependencies": {
+		"connect-couchdb": "*",
+		"connect-redis": "*",
+		"express-device": "*",
+		"jstoxml": "*",
+		"lodash": "*",
+		"negotiator": "*",
+		"passport": "*",
+		"passport-facebook": "*",
+		"passport-local": "*",
+		"passport-openid": "*",
+		"passport-twitter": "*",
+		"passport-vkontakte": "*",
+		"passport-yandex": "*",
+		"q": "*",
+		"sha1": "*",
+		"fos-pool": "git://github.com/lyxsus/fos-pool.git",
+		"fos-render": "git://github.com/lyxsus/fos-render.git",
+		"fos-socket.io": "git://github.com/lyxsus/fos-socket.io.git",
+	}
 }
