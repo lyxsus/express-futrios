@@ -10,7 +10,9 @@ module.exports = function (resource, client, host) {
 
 _.extend (module.exports.prototype, {
 	render: function (req, res, next) {
-		this.headers (req, res);
+		if (this.headers (req, res)) {
+			return;
+		}
 
 		var renderer = new Renderer (this);
 
@@ -34,13 +36,22 @@ _.extend (module.exports.prototype, {
 		var resource = this.resource,
 			meta = resource.get ('meta');
 
+		var checkETag = req.headers ['if-none-match'];
+
+		if (checkETag == resource.get ('_rev')) {
+			res.statusCode = 304;
+			res.end ();
+			return true;
+		}
+
 		res.header ('Content-Type', 'text/html; charset=utf-8');
 		res.header ('Vary', 'Accept, Accept-Encoding, Accept-Language, Cookie');
 		res.header ('ETag', resource.get ('_rev'));
+		// res.header ('Cache-Control', 'max-age')
 
 		if (meta) {
 			if (meta.updated_at) {
-				res.header ('Last-Modified', (new Date (meta.updated_at)).toGMTString ());
+				// res.header ('Last-Modified', (new Date (meta.updated_at)).toGMTString ());
 			}
 		}
 	}
