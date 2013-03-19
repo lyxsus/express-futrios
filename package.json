@@ -19,6 +19,6 @@
 		"sha1": "*",
 		"fos-pool": "git://github.com/lyxsus/fos-pool.git",
 		"fos-render": "git://github.com/lyxsus/fos-render.git",
-		"fos-socket.io": "git://github.com/lyxsus/fos-socket.io.git",
+		"fos-socket.io": "git://github.com/lyxsus/fos-socket.io.git"
 	}
 }
