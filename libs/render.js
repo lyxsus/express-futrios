@@ -4,7 +4,7 @@ var	Q = require ('q'),
 
 
 function getResource (client, routed) {
-	return client.get (
+	return client.resources.get (
 		routed.doc ? routed.app + '/' + routed.doc : routed.app
 	);
 }

@@ -2,11 +2,11 @@ var	Q = require ('q'),
 	e = encodeURIComponent;
 
 function virtualHost (host, client) {
-	return Q.when (client.get ('urn:vhost?domain=' + e (host)))
+	return Q.when (client.resources.get ('urn:vhost?domain=' + e (host)))
 		.then (function (hosts) {
 			var rows = hosts.get ('rows');
 			if (rows.length) {
-				return client.get (rows [0].id);
+				return client.resources.get (rows [0].id);
 			} else {
 				throw new Error ('virtual host not found');
 			}
