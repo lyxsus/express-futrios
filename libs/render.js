@@ -37,6 +37,7 @@ module.exports = function (req, res, next, client, routed) {
 		desiredLanguages = negotiator.preferredLanguages ();
 
 	res.header ('X-Powered-By', 'Futurios');
+	res.header ('Vary', 'Cookie, ETag, User-Agent, Accept, Accept-Language');
 
 	switch (req.method) {
 		case 'GET':
