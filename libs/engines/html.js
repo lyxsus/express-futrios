@@ -34,11 +34,12 @@ _.extend (module.exports.prototype, {
 
 	headers: function (req, res) {
 		var resource = this.resource,
-			meta = resource.get ('meta');
+			meta = resource.get ('meta'),
+			etag = resource.get ('_rev') + '-' + this.client.user.get ('_rev'),
+			checkETag = req.headers ['if-none-match'];
 
-		var checkETag = req.headers ['if-none-match'];
-
-		if (checkETag == resource.get ('_rev')) {
+		// TODO: Check "account" cookie
+		if (checkETag == etag) {
 			res.statusCode = 304;
 			res.end ();
 			return true;
@@ -46,12 +47,11 @@ _.extend (module.exports.prototype, {
 
 		res.header ('Content-Type', 'text/html; charset=utf-8');
 		res.header ('Vary', 'Accept, Accept-Encoding, Accept-Language, Cookie');
-		res.header ('ETag', resource.get ('_rev'));
-		// res.header ('Cache-Control', 'max-age')
+		res.header ('ETag', etag);
 
 		if (meta) {
 			if (meta.updated_at) {
-				// res.header ('Last-Modified', (new Date (meta.updated_at)).toGMTString ());
+				res.header ('Last-Modified', (new Date (meta.updated_at)).toGMTString ());
 			}
 		}
 	}
