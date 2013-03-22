@@ -44,8 +44,8 @@ module.exports = function (req, res, next, client, routed) {
 			return Q.when (getResource (client, routed))
 				.then (function (resource) {
 					if (routed.attach) {
-						return resource.source
-							.getAttachment (routed.attach, client.settings)
+						return resource
+							.getAttachment (routed.attach)
 								.on ('error', console.error)
 								.pipe (res);
 					} else {
