@@ -31,6 +31,18 @@ function getEngine (ext, contentType) {
 	}
 }
 
+function checkUserCookie (req, res, client) {
+	var account = client.user.get ('account') || '',
+		key = 'user_token';
+
+	if (account != req.cookies [key]) {
+		res.cookie (key, account, {
+			maxAge: 3600000,
+			path: '/'
+		});
+	}
+}
+
 module.exports = function (req, res, next, client, routed) {
 	var negotiator = new Negotiator (req),
 		desiredContentType = negotiator.preferredMediaType (contentTypes),
@@ -38,6 +50,8 @@ module.exports = function (req, res, next, client, routed) {
 
 	res.header ('X-Powered-By', 'Futurios');
 	res.header ('Vary', 'Cookie, ETag, User-Agent, Accept, Accept-Language');
+
+	checkUserCookie (req, res, client);	
 
 	switch (req.method) {
 		case 'GET':

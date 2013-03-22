@@ -21,6 +21,8 @@ module.exports = function (app, pool) {
 			})
 
 			.fail (function (error) {
+				console.log ('failed to get user session', error);
+
 				req.session.destroy ();
 
 				res.cookie ('user_token', 'nobody', {

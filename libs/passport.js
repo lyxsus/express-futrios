@@ -97,7 +97,7 @@ module.exports = function (app, pool) {
 			// req.logout ();
 			req.session.destroy ();
 			
-			res.cookie ('user_token', 'nobody', {
+			res.cookie ('user_token', '', {
 				maxAge: 3600000,
 				path: '/'
 			});
