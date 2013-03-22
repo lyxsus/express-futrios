@@ -21,7 +21,18 @@ module.exports = function (app, pool) {
 			})
 
 			.fail (function (error) {
-				res.write (error.toString ());
+				req.session.destroy ();
+
+				res.cookie ('user_token', 'nobody', {
+					maxAge: 3600000,
+					path: '/'
+				});
+
+				res.writeHead (302, {
+					'Location': '/'
+				});
+
+				res.write (JSON.stringify (error));
 				res.end ();
 			})
 
