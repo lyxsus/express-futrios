@@ -14,6 +14,9 @@ module.exports = function (app, pool) {
 	return function (req, res, next) {
 		pool.client (req.user ? {oauth: req.user} : null)
 			.then (function (client) {
+				if (client.errors) {
+					throw client.errors;
+				}
 				return route (req, client)
 					.then (function (routed) {
 						return render (req, res, next, client, routed);
