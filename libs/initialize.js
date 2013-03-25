@@ -18,6 +18,14 @@ module.exports = function (app, pool) {
 					.then (function (routed) {
 						return render (req, res, next, client, routed);
 					})
+					.fail (function (error) {
+						res.statusCode = 500;
+						res.write ('Internal Server Error ' + error);
+						res.end ();
+					})
+					.fin (function () {
+						client.release ();
+					});
 			})
 
 			.fail (function (error) {

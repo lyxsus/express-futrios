@@ -20,6 +20,7 @@ _.extend (module.exports.prototype, {
 			device: req.device
 		})
 			.then (function (html) {
+				renderer.dispose ();
 				res.write (html);
 			})
 			.fail (function (error) {
