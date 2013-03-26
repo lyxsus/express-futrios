@@ -1,7 +1,7 @@
 var	passport = require ('passport'),
 	LocalStrategy = require ('passport-local').Strategy,
 
-	Q = require ('q'),
+	Promises = require ('vow'),
 	_ = require ('lodash'),
 
 	authorize = require ('./authorize.js');
@@ -79,7 +79,7 @@ module.exports = function (app, pool) {
 		.use ('/_session', function (req, res) {
 			res.setHeader ('content-type', 'application/json; charset=utf-8');
 
-			Q.when (pool.client (req.user ? {oauth: req.user} : null))
+			Promises.when (pool.client (req.user ? {oauth: req.user} : null))
 				.then (function (client) {
 					res.write (
 						JSON.stringify ({

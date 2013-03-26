@@ -1,10 +1,7 @@
-var	Q = require ('q'),
-	_ = require ('lodash'),
+var	_ = require ('lodash'),
 	passport = require ('./passport'),
 	route = require ('./route'),
 	render = require ('./render');
-
-Q.longStackJumpLimit = 0;
 
 module.exports = function (app, pool) {
 	passport (app, pool);
@@ -26,7 +23,7 @@ module.exports = function (app, pool) {
 						res.write ('Internal Server Error ' + error);
 						res.end ();
 					})
-					.fin (function () {
+					.always (function () {
 						client.release ();
 					});
 			})

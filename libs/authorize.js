@@ -1,9 +1,9 @@
-var	Q = require ('q'),
+var	Promises = require ('vow'),
 	sha1 = require ('sha1');
 
 
 function getUserByPassword (db, params) {
-	return Q.when (db.views.get ('oauth', 'username'))
+	return Promises.when (db.views.get ('oauth', 'username'))
 		.then (function (view) {
 			return view.get ({
 				key: params.username,
@@ -33,7 +33,7 @@ function getUserByPassword (db, params) {
 }
 
 module.exports = function (pool, params) {
-	return Q.when (pool.server.database ('_users'))
+	return Promises.when (pool.server.database ('_users'))
 		.then (function (users) {
 			switch (true) {
 				default:

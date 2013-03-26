@@ -1,6 +1,6 @@
 var Q = require ('q');
 
-Q.longStackJumpLimit = 0;
+// Q.longStackJumpLimit = 0;
 
 module.exports = {
 	Pool: require ('fos-pool'),

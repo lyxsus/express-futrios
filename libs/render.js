@@ -1,4 +1,4 @@
-var	Q = require ('q'),
+var	Promises = require ('vow'),
 	_ = require ('lodash'),
 	Negotiator = require ('negotiator');
 
@@ -55,7 +55,7 @@ module.exports = function (req, res, next, client, routed) {
 
 	switch (req.method) {
 		case 'GET':
-			return Q.when (getResource (client, routed))
+			return Promises.when (getResource (client, routed))
 				.then (function (resource) {
 					if (routed.attach) {
 						return resource

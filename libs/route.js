@@ -1,8 +1,8 @@
-var	Q = require ('q'),
+var	Promises = require ('vow'),
 	e = encodeURIComponent;
 
 function virtualHost (host, client) {
-	return Q.when (client.resources.get ('urn:vhost?domain=' + e (host)))
+	return Promises.when (client.resources.get ('urn:vhost?domain=' + e (host)))
 		.then (function (hosts) {
 			var rows = hosts.get ('rows');
 			if (rows.length) {

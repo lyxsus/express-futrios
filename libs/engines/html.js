@@ -27,7 +27,7 @@ _.extend (module.exports.prototype, {
 				console.error (error);
 				res.write (error);
 			})
-			.fin (function () {
+			.always (function () {
 				res.end ();
 			})
 			.done ();
