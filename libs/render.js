@@ -10,9 +10,9 @@ function getResource (client, routed) {
 }
 
 var engines = {
+	html: require ('./engines/html'),
 	json: require ('./engines/json'),
-	xml: require ('./engines/xml'),
-	html: require ('./engines/html')
+	xml: require ('./engines/xml')
 };
 
 var contentTypes = _.uniq (_.flatten (

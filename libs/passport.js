@@ -22,6 +22,42 @@ function userCtx (user) {
 	}
 }
 
+var parseUserOAuth = function (req, accessToken, refreshToken, profile, done) {
+	var params = {
+		oauth: {
+			accessToken: accessToken,
+			refreshToken: refreshToken,
+			profile: profile
+		}
+	};
+
+	switch (profile.provider) {
+		case 'facebook':
+			profile.link = 'https://facebook.com/' + profile.id;
+			break;
+
+		case 'vkontakte':
+			profile.link = 'https://vk.com/' + profile.username;
+			break;
+	}
+
+	return params;
+};
+
+var parseUserOpenId = function (req, token, profile, done) {
+	var params = {
+		openid: {
+			token: token,
+			profile: profile
+		}
+	};
+
+	profile.provider = 'openid';
+	profile.link = token;
+
+	return params;
+};
+
 
 module.exports = function (app, pool) {
 	passport.serializeUser (function (user, done) {
@@ -106,6 +142,57 @@ module.exports = function (app, pool) {
 				'Location': '/'
 			});
 			
+			res.end ();
+		})
+
+		.use ('/auth' , function (req, res, next) {
+			var args = arguments;
+
+			pool.client (req.user ? {oauth: req.user} : null)
+				.then (function (client) {
+					return client.resources.get ('urn:auth:provider/' + req.path.split ('/') [1]);
+				})
+				.then (function (provider) {
+					var Strategy = require ('passport-' + provider.get ('provider')).Strategy,
+						params = provider.json (),
+						parser;
+
+					params.passReqToCallback = true;
+
+					if (params.provider == 'openid') {
+						params.profile = true;
+						parser = parseUserOpenId;
+					} else {
+						parser = parseUserOAuth;
+					}
+
+					var strategy = new Strategy (params, function (req, accessToken, refreshToken, profile, done) {
+						var params = parser.apply (null, arguments);
+
+						if (req.user) {
+							params.user = req.user;
+						}
+						
+						authorize (pool, params)
+							.then (function (user) {
+								console.log ('authorized as', user.id);
+								done (null, user);
+							})
+							.fail (done)
+							.done ();
+					});
+
+					passport.use (params._id, strategy);
+					passport.authenticate (params._id).apply (null, args);
+				})
+				.fail (function (error) {
+					console.error ('oauth failed', error);
+				})
+				.done ();
+		})
+		
+		.use ('/auth', function (req, res, next) {
+			res.writeHead (302, {'Location': '/'});
 			res.end ();
 		});
 };

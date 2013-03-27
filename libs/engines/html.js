@@ -60,5 +60,6 @@ _.extend (module.exports.prototype, {
 
 
 module.exports.contentTypes = [
-	'text/html'
+	'text/html',
+	'application/xml'
 ];
