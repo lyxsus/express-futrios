@@ -108,6 +108,19 @@ function getUserTokens (user) {
 	};
 }
 
+function setAvatarUrl (provider, profile) {
+	switch (provider) {
+		case 'facebook':
+			profile.photos = [
+				{
+					"value": "http://graph.facebook.com/1053636468/picture",
+					"type": "thumbnail"
+				}
+			];
+			break;
+	}
+}
+
 module.exports = function (pool, params) {
 	return Promises.when (pool.server.database ('_users'))
 		.then (function (users) {
@@ -126,6 +139,8 @@ module.exports = function (pool, params) {
 						profile = params.openid.profile;
 					}
 
+					setAvatarUrl (provider, profile);
+
 					return getUserByOAuth (users, params)
 						.then (function (user) {
 							if (user) {
@@ -139,8 +154,15 @@ module.exports = function (pool, params) {
 							if (user) {
 								return user;
 							} else {
+								var name;
+
+								if (params.openid) {
+									name = 'openid-' + sha1 (access_token);
+								} else {
+									name = provider + '-' + profile.id;
+								}
 								return registrate ({
-									name: 'create-new-user'
+									name: name
 								}, pool);
 							}
 						})

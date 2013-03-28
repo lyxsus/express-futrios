@@ -28,8 +28,6 @@ module.exports = function (data, pool) {
 
 	return pool.server.uuid ()
 		.then (function (uuid) {
-			uuid = 'b63ee1a30d15300ac7ae58ca6ad91d7045f618ba';
-
 			return Promises.all ([
 				createAccount ({id: uuid}),
 				server.create ('users/' + uuid, sign)
@@ -69,7 +67,7 @@ module.exports = function (data, pool) {
 				});
 		})
 
-		.fail (function () {
-			console.log ('???', arguments);
+		.fail (function (error) {
+			console.log ('Failed to register user', error);
 		});
 };
