@@ -24,7 +24,7 @@ _.extend (module.exports.prototype, {
 				res.write (html);
 			})
 			.fail (function (error) {
-				console.error (error);
+				console.error ('Failed to render html', req.url, error);
 				res.write (error);
 			})
 			.always (function () {
