@@ -1,15 +1,13 @@
-var Promises = require ('vow');
-
-function createAccount () {
-
-}
+var Promises = require ('vow'),
+	sha1 = require ('sha1');
 
 function createDatabase () {
 	return server.create ()
 }
 
-function createUser () {
-
+function generateToken () {
+	var version = '1';
+	return sha1 (Math.random ().toString ()).substring (0, 20) + '-' + version;
 }
 
 module.exports = function (data, pool) {
@@ -58,9 +56,14 @@ module.exports = function (data, pool) {
 					data.database = database.name;
 					data.type = 'user';
 
+					// Generate oauth tokens
+					data.oauth = {
+						consumer_keys: {},
+						tokens: {}
+					};
 
-					// TODO: Generate oauth tokens
-					// TODO: Generate random password
+					data.oauth.consumer_keys [generateToken ()] = generateToken ();
+					data.oauth.tokens ['personal-' + generateToken ()] = generateToken ();
 
 					return users.documents.create (null, data, sign);
 				});
