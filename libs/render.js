@@ -60,7 +60,7 @@ module.exports = function (req, res, next, client, routed) {
 					if (routed.attach) {
 						return resource
 							.getAttachment (routed.attach)
-								.on ('error', console.error)
+								// .on ('error', console.error)
 								.pipe (res);
 					} else {
 						var Engine = getEngine (routed.ext, desiredContentType),
