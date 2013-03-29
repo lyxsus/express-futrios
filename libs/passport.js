@@ -146,6 +146,11 @@ module.exports = function (app, pool) {
 		})
 
 		.use ('/auth' , function (req, res, next) {
+			if (req.url.indexOf ('.') !== -1) {
+				next ();
+				return;
+			}
+
 			var args = arguments;
 
 			pool.client (req.user ? {oauth: req.user} : null)
@@ -192,6 +197,11 @@ module.exports = function (app, pool) {
 		})
 		
 		.use ('/auth', function (req, res, next) {
+			if (req.url.indexOf ('.') !== -1) {
+				next ();
+				return;
+			}
+			
 			res.writeHead (302, {'Location': '/'});
 			res.end ();
 		});
