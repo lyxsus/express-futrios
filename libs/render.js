@@ -63,10 +63,17 @@ module.exports = function (req, res, next, client, routed) {
 								// .on ('error', console.error)
 								.pipe (res);
 					} else {
-						var Engine = getEngine (routed.ext, desiredContentType),
-							engine = new Engine (resource, client, routed.host);
+						try {
+							var Engine = getEngine (routed.ext, desiredContentType),
+								engine = new Engine (resource, client, routed.host);
+							
+							return engine.render (req, res, next);
+						} catch (e) {
+							console.error (e.message, e.stack);
+
+							res.redirect ('/');
+						}
 						
-						return engine.render (req, res, next);
 
 					}
 				});
