@@ -4,8 +4,6 @@ var Promises = require ('vow'),
 module.exports = function (sessionId, database, pool) {
 	if (!sessionId || !database || /\/nobody^/.test (database)) return false;
 
-	console.log ('syncSession', sessionId, database);
-
 	return Promises.when (pool.server.database ('users/nobody'))
 		.then (function (source) {
 			// Get view results

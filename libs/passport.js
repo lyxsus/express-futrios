@@ -5,6 +5,7 @@ var	passport = require ('passport'),
 	_ = require ('lodash'),
 
 	authorize = require ('./authorize.js'),
+	registrate = require ('./registrate'),
 	syncSession = require ('./syncSession.js');
 
 function userCtx (user) {
@@ -96,15 +97,6 @@ module.exports = function (app, pool) {
 	return app
 		.use (passport.initialize ())
 		.use (passport.session ())
-
-		// .use (function (req, res, next) {
-			// syncSession (req.session.id, 'users/252cd3e11e2e8c6a8de4bc6d8bc82581', pool)
-			// 	.fail (function (error) {
-			// 		console.error ('Failed to sync session', error);
-			// 	})
-			// 	.always (next)
-			// 	.done ();
-		// })
 
 		.post ('/login', passport.authenticate ('local'), function (req, res) {
 			var database = req.user.get ('database');
@@ -232,5 +224,47 @@ module.exports = function (app, pool) {
 			
 			res.writeHead (302, {'Location': '/'});
 			res.end ();
+		})
+
+		.use ('/registrate', function (req, res, next) {
+			var data = {
+				name: req.body.email,
+				email: req.body.email,
+				password: req.body.password
+			};
+
+			registrate (data, pool)
+				.then (function (user) {
+					return syncSession (req.session.id, user.get ('database'), pool)
+						.then (function () {
+							if (req.headers.accept == 'application/json') {
+								res.setHeader ('content-type', 'application/json; charset=utf-8');
+
+								res.write (
+									JSON.stringify ({
+										ok: true,
+										userCtx: userCtx (req.user)
+									})
+								);
+								res.end ();
+							} else {
+								res.redirect ('/');
+							}
+						});
+				})
+				.fail (function (error) {
+					res.write (
+						JSON.stringify ({
+							error: error
+						})
+					);
+					res.end ();
+				})
+				.done ();
+
+			// TODO: Create user
+			// TODO: Sync session
+			// TODO: Authorize (req.login)
+			// TODO: Reply json, if json requested, or redirect to main
 		});
 };
