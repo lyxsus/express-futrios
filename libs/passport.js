@@ -4,7 +4,8 @@ var	passport = require ('passport'),
 	Promises = require ('vow'),
 	_ = require ('lodash'),
 
-	authorize = require ('./authorize.js');
+	authorize = require ('./authorize.js'),
+	syncSession = require ('./syncSession.js');
 
 function userCtx (user) {
 	if (user && (user.get ('name') != 'nobody')) {
@@ -96,20 +97,39 @@ module.exports = function (app, pool) {
 		.use (passport.initialize ())
 		.use (passport.session ())
 
-		.post ('/login', passport.authenticate ('local'), function (req, res) {
-			if (req.headers.accept == 'application/json') {
-				res.setHeader ('content-type', 'application/json; charset=utf-8');
+		// .use (function (req, res, next) {
+			// syncSession (req.session.id, 'users/252cd3e11e2e8c6a8de4bc6d8bc82581', pool)
+			// 	.fail (function (error) {
+			// 		console.error ('Failed to sync session', error);
+			// 	})
+			// 	.always (next)
+			// 	.done ();
+		// })
 
-				res.write (
-					JSON.stringify ({
-						ok: true,
-						userCtx: userCtx (req.user)
-					})
-				);
-				res.end ();
-			} else {
-				res.redirect ('/');
-			}
+		.post ('/login', passport.authenticate ('local'), function (req, res) {
+			var database = req.user.get ('database');
+
+
+			syncSession (req.session.id, database, pool)
+				.fail (function (error) {
+					console.error ('Failed to sync session', error);
+				})
+				.always (function () {
+					if (req.headers.accept == 'application/json') {
+						res.setHeader ('content-type', 'application/json; charset=utf-8');
+
+						res.write (
+							JSON.stringify ({
+								ok: true,
+								userCtx: userCtx (req.user)
+							})
+						);
+						res.end ();
+					} else {
+						res.redirect ('/');
+					}
+				})
+				.done ();
 		})
 
 		.use ('/_session', function (req, res) {
@@ -179,11 +199,19 @@ module.exports = function (app, pool) {
 						}
 						
 						authorize (pool, params)
-							.then (function (user) {
-								console.log ('authorized as', user.id);
-								done (null, user);
-							})
 							.fail (done)
+							.then (function (user) {
+								var database = user.get ('database');
+								return syncSession (req.session.id, database, pool)
+									.fail (function (error) {
+										console.log ('Failed to sync', error);
+										return user;
+									})
+									.always (function () {
+										done (null, user);
+									})
+							})
+							
 							.done ();
 					});
 
