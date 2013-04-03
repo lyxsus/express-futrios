@@ -16,8 +16,6 @@ module.exports = function (sessionId, database, pool) {
 				.then (function (fragment) {
 					var rows = fragment.get ('rows');
 
-					console.log ('result', rows);
-
 					if (rows.length) {
 						var ids = _.map (rows, function (row) {
 							return row.id;
