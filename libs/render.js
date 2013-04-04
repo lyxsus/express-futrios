@@ -79,8 +79,44 @@ module.exports = function (req, res, next, client, routed) {
 				});
 
 		case 'POST':	// TODO: Create element in collection
-		case 'PUT':		// TODO: Update document
-		case 'DELETE':	// TODO: Delete document
+
+		case 'PUT':	{
+			return Promises.when (getResource (client, routed))
+				.then (function (resource) {
+					if (routed.attach) {
+						return resource
+							.saveAttachment ({
+								name: routed.attach,
+								contentType: 'text/plain',	// TODO: Detect content-type
+								body: req.rawBody
+							})
+							.then (function () {
+								return resource.getAttachment (routed.attach)
+									.pipe (res);
+							});
+					} else {
+						// TODO: Update element in collection
+						throw new Error ('Not implemented');
+					}
+				});
+		}
+		case 'DELETE': {
+			return Promises.when (getResource (client, routed))
+				.then (function (resource) {
+					if (routed.attach) {
+						return resource
+							.removeAttachment (routed.attach)
+							.then (function () {
+								res.statusCode = 204;
+								res.write ('204 No Content');
+								res.end ();
+							});
+					} else {
+						// TODO: Delete document
+						throw new Error ('Not implemented');
+					}
+				});
+		}
 
 		default:
 			res.writeHead (415);
