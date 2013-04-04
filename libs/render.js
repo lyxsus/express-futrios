@@ -84,11 +84,30 @@ module.exports = function (req, res, next, client, routed) {
 			return Promises.when (getResource (client, routed))
 				.then (function (resource) {
 					if (routed.attach) {
+						// req.setEncoding ('binary');
+
+						// req.resume ();
+
+						// req.on ('data', function (chunk) {
+						// 	console.log ('data', chunk);
+						// });
+
+						// req.on ('end', function () {
+						// 	console.log ('ended at last');
+						// });
+
+						// console.log ('fuck off');
+
+
+						// res.write ('fuck off');
+						// res.end ();
+						// return;
+
 						return resource
 							.saveAttachment ({
 								name: routed.attach,
 								contentType: 'text/plain',	// TODO: Detect content-type
-								body: req.rawBody
+								body: req
 							})
 							.then (function () {
 								return resource.getAttachment (routed.attach)
