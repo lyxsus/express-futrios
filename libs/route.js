@@ -56,6 +56,11 @@ function resolveUrl (url, host, routes) {
 				} else {
 					doc = suffix.substring (0, i);
 					attach = suffix.substring (i + 1);
+
+					i = attach.indexOf ('?');
+					if (i !== -1) {
+						attach = attach.substring (0, i);
+					}
 				}
 			}
 		}
