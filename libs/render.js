@@ -66,6 +66,15 @@ module.exports = function (req, res, next, client, routed) {
 						try {
 							var Engine = getEngine (routed.ext, desiredContentType),
 								engine = new Engine (resource, client, routed.host);
+
+							/*
+								undefined is not a function TypeError: undefined is not a function
+							    at /Users/lyxsus/GitHub/express-futrios/libs/render.js:68:18
+							    at /Users/lyxsus/GitHub/fos-mixin/node_modules/vow/lib/vow.js:169:31
+							    at process._tickCallback (node.js:427:13)
+							    at process._makeCallback (node.js:345:15)
+						    */
+
 							
 							return engine.render (req, res, next);
 						} catch (e) {
@@ -84,25 +93,6 @@ module.exports = function (req, res, next, client, routed) {
 			return Promises.when (getResource (client, routed))
 				.then (function (resource) {
 					if (routed.attach) {
-						// req.setEncoding ('binary');
-
-						// req.resume ();
-
-						// req.on ('data', function (chunk) {
-						// 	console.log ('data', chunk);
-						// });
-
-						// req.on ('end', function () {
-						// 	console.log ('ended at last');
-						// });
-
-						// console.log ('fuck off');
-
-
-						// res.write ('fuck off');
-						// res.end ();
-						// return;
-
 						return resource
 							.saveAttachment ({
 								name: routed.attach,
