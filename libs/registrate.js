@@ -48,6 +48,10 @@ module.exports = function (data, pool) {
 						data.roles.push ('user');
 					}
 
+					if (data.roles.indexOf (account.id) === -1) {
+						data.roles.push (account.id);
+					}
+
 					data._id = 'org.couchdb.user:' + data.name;
 
 					data.account = account.id;
