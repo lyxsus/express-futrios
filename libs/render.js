@@ -1,6 +1,7 @@
 var	Promises = require ('vow'),
 	_ = require ('lodash'),
-	Negotiator = require ('negotiator');
+	Negotiator = require ('negotiator'),
+	bodyParser = require ('express').bodyParser ();
 
 
 function getResource (client, routed) {
@@ -87,7 +88,17 @@ module.exports = function (req, res, next, client, routed) {
 					}
 				});
 
-		case 'POST':	// TODO: Create element in collection
+		case 'POST': {
+			if (routed.app) {
+				if (routed.doc) {
+					// TODO: Create new document attachment
+				} else {
+					// TODO: Create new element in collection
+				}
+			} else {
+				throw new Error ('Not supported');
+			}
+		}
 
 		case 'PUT':	{
 			return Promises.when (getResource (client, routed))
