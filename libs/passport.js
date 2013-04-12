@@ -1,5 +1,6 @@
 var	passport = require ('passport'),
 	LocalStrategy = require ('passport-local').Strategy,
+	// BasicStrategy = require ('passport-http').BasicStrategy,
 
 	Promises = require ('vow'),
 	_ = require ('lodash'),
@@ -93,6 +94,20 @@ module.exports = function (app, pool) {
 			.fail (done)
 			.done ();
 	}));
+
+	// passport.use (new BasicStrategy (
+	// 	function (username, password, done) {
+	// 		authorize (pool, {
+	// 			username: username,
+	// 			password: password
+	// 		})
+	// 			.then (function (user) {
+	// 				done (null, user);
+	// 			})
+	// 			.fail (done)
+	// 			.done ();
+	// 	})
+	// );
 
 	return app
 		.use (passport.initialize ())

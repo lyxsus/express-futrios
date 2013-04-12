@@ -1,7 +1,9 @@
 var	Promises = require ('vow'),
 	_ = require ('lodash'),
 	Negotiator = require ('negotiator'),
-	bodyParser = require ('express').bodyParser ();
+	bodyParser = require ('express').bodyParser (),
+	formidable = require('formidable'),
+	fs = require ('fs');
 
 
 function getResource (client, routed) {
@@ -91,7 +93,57 @@ module.exports = function (req, res, next, client, routed) {
 		case 'POST': {
 			if (routed.app) {
 				if (routed.doc) {
-					// TODO: Create new document attachment
+					return Promises.when (getResource (client, routed))
+						.then (function (resource) {
+							var contentType = req.headers ['content-type'];
+
+							if (/^multipart\/form-data/.test (contentType)) {
+								// Upload attachment from multipart/form-data request
+								var form = new formidable.IncomingForm (),
+									promise = Promises.promise ();
+
+								form.uploadDir = '/tmp';
+
+								form.parse (req, function (error, fields, files) {
+									if (error) {
+										promise.reject (error);
+									} else {
+										var file = files._attachments;
+										
+										resource
+											.saveAttachment ({
+												name: file.name,
+												contentType: file.type,
+												body: fs.createReadStream (file.path)
+											}, client.sign ())
+
+											.then (function () {
+												return resource.getAttachment (routed.attach, client.sign ())
+													.pipe (res);
+											})
+
+											.then (promise.fulfill, promise.reject);
+									}
+								});
+
+								req.resume ();
+
+								return promise;
+							} else {
+								// Upload regular attachment
+								return resource
+									.saveAttachment ({
+										name: routed.attach,
+										contentType: contentType,
+										body: req
+									}, client.sign ())
+
+									.then (function () {
+										return resource.getAttachment (routed.attach, client.sign ())
+											.pipe (res);
+									});
+							}
+						});
 				} else {
 					// TODO: Create new element in collection
 				}
@@ -105,13 +157,15 @@ module.exports = function (req, res, next, client, routed) {
 				.then (function (resource) {
 					if (routed.attach) {
 						return resource
+							
 							.saveAttachment ({
 								name: routed.attach,
 								contentType: 'text/plain',	// TODO: Detect content-type
 								body: req
-							})
+							}, client.sign ())
+
 							.then (function () {
-								return resource.getAttachment (routed.attach)
+								return resource.getAttachment (routed.attach, client.sign ())
 									.pipe (res);
 							});
 					} else {
@@ -125,7 +179,7 @@ module.exports = function (req, res, next, client, routed) {
 				.then (function (resource) {
 					if (routed.attach) {
 						return resource
-							.removeAttachment (routed.attach)
+							.removeAttachment (routed.attach, client.sign ())
 							.then (function () {
 								res.statusCode = 204;
 								res.write ('204 No Content');
