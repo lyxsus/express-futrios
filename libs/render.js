@@ -108,11 +108,12 @@ module.exports = function (req, res, next, client, routed) {
 									if (error) {
 										promise.reject (error);
 									} else {
-										var file = files._attachments;
-										
+										var file = files._attachments,
+											folder = fields.folder ? fields.folder + '/' : '';
+
 										resource
 											.saveAttachment ({
-												name: file.name,
+												name: folder + file.name,
 												contentType: file.type,
 												body: fs.createReadStream (file.path)
 											}, client.sign ())
