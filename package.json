@@ -8,6 +8,7 @@
 		"jstoxml": "*",
 		"lodash": "*",
 		"negotiator": "*",
+		"formidable": "*",
 		"passport": "*",
 		"passport-local": "*",
 		"passport-http": "*",
